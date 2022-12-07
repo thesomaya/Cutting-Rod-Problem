@@ -1,0 +1,55 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int max(int a, int b)
+{
+    return (a > b)? a : b;
+}
+// cutRod bruteforce O(2^n)
+int cutRodBF(int price[], int index, int n)
+{
+    if (index == 1)
+        return n * price[1];
+    int notCut = cutRodBF(price,index - 1,n);
+    int cut = INT_MIN;
+    if (index <= n)
+        cut = price[index] + cutRodBF(price,index,n - index);
+    return max (notCut, cut);
+}
+// cutRod dynamic programming O(n^2)
+int cutRodDP(int price[], int val[], int n, int c[])
+{
+val[0] = 0;
+    for (int i = 2; i<=n+1; i++)
+    {
+        int max_val = -1;
+        int index = -1;
+        for (int j = 1; j < i; j++)
+        {
+            if (price[j] + val[i-j-1] > max_val)
+            {
+                max_val = price[j] + val[i-j-1];
+index = j; }
+        }
+        val[i-1] = max_val;
+        c[i-1] = index;
+}
+    return val[n];
+}
+void print (int c [], int n)
+{
+while (n > 0) {
+        cout << "cut rod at " << c[n] << endl;
+n = n - c[n]; }
+}
+
+int main() {
+    int arr[] = {0, 3, 5, 8, 9};
+    int size = sizeof(arr)/sizeof(arr[0]) - 1;
+    cout <<"Maximum Obtainable Value is "<<cutRodBF(arr, size, size)<<endl;
+    int val[size + 1];
+    int c[size];
+    cout <<"Maximum Obtainable Value is "<<cutRodDP(arr, val, size,
+c)<<endl;
+    print (c,size);
+return 0; }
